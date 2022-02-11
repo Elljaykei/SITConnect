@@ -16,6 +16,16 @@
         .auto-style4 {
             height: 26px;
         }
+        .auto-style5 {
+            width: 134px;
+            height: 33px;
+        }
+        .auto-style6 {
+            height: 33px;
+        }
+        .auto-style7 {
+            margin-left: 70px;
+        }
     </style>
 </head>
 <body>
@@ -27,56 +37,53 @@
                 <tr>
                     <td class="auto-style2">First Name</td>
                     <td>
-                        <asp:TextBox ID="fName_tb" runat="server" Width="200px" required></asp:TextBox>
+                        <asp:Label ID="fname_lbl" runat="server"></asp:Label>
                     </td>
                 </tr>
                 <tr>
                     <td class="auto-style2">Last Name</td>
                     <td>
-                        <asp:TextBox ID="lName_tb" runat="server" Width="200px" required></asp:TextBox>
+                        <asp:Label ID="lname_lbl" runat="server"></asp:Label>
                     </td>
                 </tr>
                 <tr>
                     <td class="auto-style2">Credit Card Info</td>
                     <td>
-                        <asp:TextBox ID="creditCard_tb" runat="server" Width="200px" MinLength="16" MaxLength="16" required></asp:TextBox>
+                        <asp:Label ID="creditCard_lbl" runat="server"></asp:Label>
                     </td>
                 </tr>
                 <tr>
                     <td class="auto-style2">Email Address</td>
                     <td>
-                        <asp:TextBox ID="emailAddress_tb" runat="server" Width="200px" onkeyup="emailValidate()" required></asp:TextBox>
-                        <asp:Label ID="emailChecker_lbl" runat="server"></asp:Label>
+                        <asp:Label ID="email_lbl" runat="server"></asp:Label>
                     </td>
                 </tr>
                 <tr>
-                    <td class="auto-style2">Password</td>
-                    <td>
-                        <asp:TextBox ID="password_tb" runat="server" Width="200px" onkeyup="pwValidate()" required></asp:TextBox>
-                        <asp:Label ID="pwdChecker_lbl" runat="server"></asp:Label>
-                        <br />
+                    <td class="auto-style5">Password</td>
+                    <td class="auto-style6">
+                        <asp:Label ID="password_lbl" runat="server"></asp:Label>
                     </td>
                 </tr>
                 <tr>
                     <td class="auto-style2">Date of Birth</td>
                     <td>
-                        <asp:TextBox ID="dob_tb" runat="server" Width="200px" Text='<%# Bind("DateofBirth", "{0:yyyy-MM-dd}") %>' TextMode="Date" required></asp:TextBox>
+                        <asp:Label ID="dob_lbl" runat="server"></asp:Label>
                     </td>
                 </tr>
                 <tr>
                     <td class="auto-style2">Photo</td>
                     <td>
-                        <asp:TextBox ID="photo_tb" runat="server" Width="200px" required></asp:TextBox>
+                        <asp:Label ID="photo_lbl" runat="server"></asp:Label>
                     </td>
                 </tr>
                 <tr>
                     <td class="auto-style4" colspan="2">
-                        <asp:Label ID="error_msg_lbl" runat="server" ForeColor="Red"></asp:Label>
-                    </td>
+                        &nbsp;</td>
                 </tr>
                 <tr>
                     <td colspan="2">
-        <asp:Button ID="registerBtn" runat="server" OnClick="registerBtn_Click" Text="Register" CssClass="btn" Width="343px" />
+                        <asp:Button ID="chgPassBtn" runat="server" Text="Change Password" />
+                        <asp:Button ID="logOutBtn" runat="server" CssClass="auto-style7" OnClick="logOutBtn_Click" Text="Log Out" Width="171px" />
                     </td>
                 </tr>
             </table>

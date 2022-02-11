@@ -18,15 +18,10 @@
         }
     </style>
 
-    <script src="https://www.google.com/recaptcha/api.js?render=6Lcf0W8eAAAAAH6k6gvFRO76lgPmQ9uZiTyUaqug"></script>    <script>
-        grecaptcha.ready(function () {
-            grecaptcha.execute('6Lcf0W8eAAAAAH6k6gvFRO76lgPmQ9uZiTyUaqug', { action: 'Login' }).then(function (token) {
-                document.getElementById("g-recaptcha-response").value = token;
-            });
-        });
-    </script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LcXaHAeAAAAAPAFizR33X8IpXqCdQKCfrvfXuMf"></script>
+    
 
-    <script type="text/javascript">
+<%--    <script type="text/javascript">
          function emailValidate() {
              var email = document.getElementById('<%=emailAddress_tb.ClientID %>').value;
 
@@ -39,7 +34,7 @@
                  document.getElementById("emailChecker_lbl").style.color = "Green";
              }
          }
-    </script>
+    </script>--%>
 </head>
 <body>
     <form id="form2" runat="server">
@@ -49,7 +44,7 @@
                 <tr>
                     <td class="auto-style2">Email Address</td>
                     <td>
-                        <asp:TextBox ID="emailAddress_tb" runat="server" Width="200px" onkeyup="emailValidate()" required></asp:TextBox>
+                        <asp:TextBox ID="emailAddress_tb" runat="server" Width="200px" required></asp:TextBox>
                         <asp:Label ID="emailChecker_lbl" runat="server"></asp:Label>
                     </td>
                 </tr>
@@ -72,12 +67,23 @@
                     </td>
                 </tr>
             </table>
+            <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/>
+                        <asp:Label ID="lbl_gScore" runat="server"></asp:Label>
         </div>
+        
     </form>
     <p>
-                        Click here to <a href="Registration.aspx" class="btn">Register</a>!
-                    </p>
+        Click here to <a href="Registration.aspx" class="btn">Register</a>!
+    </p>
+    <script>
+        grecaptcha.ready(function () {
+            grecaptcha.execute('6LcXaHAeAAAAAPAFizR33X8IpXqCdQKCfrvfXuMf', { action: 'Login' }).then(function (token) {
+                document.getElementById("g-recaptcha-response").value = token;
+            });
+        });
+    </script>
+    
 
-    <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/>
 </body>
 </html>
+

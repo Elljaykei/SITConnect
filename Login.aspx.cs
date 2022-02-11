@@ -36,104 +36,120 @@ namespace SITConnect
                 string pwd = password_tb.Text.Trim();
                 string email = emailAddress_tb.Text.Trim();
 
-                var validReg = true;
-                var errorMsg = "";
-
-                if (string.IsNullOrEmpty(email))
-                {
-                    errorMsg += "*Email Address is required<br>";
-                    validReg = false;
-                }
-
-                if (string.IsNullOrEmpty(pwd))
-                {
-                    errorMsg += "*Password is required<br>";
-                    validReg = false;
-                }
-
-                if (validReg)
-                {
-                    using (SqlConnection con = new SqlConnection(MYDBConnectionString))
-                    {
-                        using (SqlCommand cmd = new SqlCommand("INSERT INTO AuditLog VALUES(@Event, @UserID, @Time,  @IPAddress)"))
-                        {
-                            using (SqlDataAdapter sda = new SqlDataAdapter())
-                            {
-                                var ipAdd = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-
-                                if (string.IsNullOrEmpty(ipAdd))
-                                {
-                                    ipAdd = Request.ServerVariables["REMOTE_ADDR"];
-                                }
-
-                                cmd.CommandType = CommandType.Text;
-                                cmd.Parameters.AddWithValue("@Event", "Attempted Log In");
-                                cmd.Parameters.AddWithValue("@UserID", emailAddress_tb.Text.Trim());
-                                cmd.Parameters.AddWithValue("@Time", DateTime.Now);
-                                cmd.Parameters.AddWithValue("@IPAddress", ipAdd);
-                                cmd.Connection = con;
-                                con.Open();
-                                cmd.ExecuteNonQuery();
-                                con.Close();
-
-                            }
-                        }
-                        con.Open();
-                        //check if email exists
-                        SqlCommand check_email = new SqlCommand("SELECT * FROM Account WHERE Email = @Email", con);
-                        check_email.Parameters.AddWithValue("@Email", email);
-                        SqlDataReader reader = check_email.ExecuteReader();
-                        if (reader.HasRows)
-                        {
-                            SHA512Managed hashing = new SHA512Managed();
-                            string dbHash = getDBHash(email);
-                            string dbSalt = getDBSalt(email);
-                            try
-                            {
-                                if (dbSalt != null && dbSalt.Length > 0 && dbHash != null && dbHash.Length > 0)
-                                {
-                                    string pwdWithSalt = pwd + dbSalt;
-                                    byte[] hashWithSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwdWithSalt));
-                                    string userHash = Convert.ToBase64String(hashWithSalt);
-                                    if (!userHash.Equals(dbHash))
-                                    {
-                                        errorMsg += "Userid or password is not valid. Please try again.";
-                                        validReg = false;
-                                    }
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                throw new Exception(ex.ToString());
-                            }
-                            finally { }
-                        }
-                        con.Close();
-
-                    }
-                }
-
-
-                if (validReg)
-                {
-                    if (verificationEmail(email))
-                    {
-                        Session["email"] = email;
-                        string guid = Guid.NewGuid().ToString();
-                        Session["AuthTokenVerification"] = guid;
-                        Response.Cookies.Add(new HttpCookie("AuthTokenVerification", guid));
-                        Response.Redirect("Verification.aspx");
-                    }
-                    else
-                    {
-                        error_msg_lbl.Text = "*Email does not exist.";
-                    }
-
+                if(lockoutCheck(email)) {
+                    error_msg_lbl.Text = "You have been locked out.";
+                    return;
                 }
                 else
                 {
-                    error_msg_lbl.Text = errorMsg;
+                    var validReg = true;
+                    var errorMsg = "";
+
+                    if (string.IsNullOrEmpty(email))
+                    {
+                        errorMsg += "*Email Address is required<br>";
+                        validReg = false;
+                    }
+
+                    if (string.IsNullOrEmpty(pwd))
+                    {
+                        errorMsg += "*Password is required<br>";
+                        validReg = false;
+                    }
+
+                    if (validReg)
+                    {
+                        using (SqlConnection con = new SqlConnection(MYDBConnectionString))
+                        {
+                            using (SqlCommand cmd = new SqlCommand("INSERT INTO AuditLog VALUES(@Event, @UserID, @Time,  @IPAddress)"))
+                            {
+                                using (SqlDataAdapter sda = new SqlDataAdapter())
+                                {
+                                    var ipAdd = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+
+                                    if (string.IsNullOrEmpty(ipAdd))
+                                    {
+                                        ipAdd = Request.ServerVariables["REMOTE_ADDR"];
+                                    }
+
+                                    cmd.CommandType = CommandType.Text;
+                                    cmd.Parameters.AddWithValue("@Event", "Attempted Log In");
+                                    cmd.Parameters.AddWithValue("@UserID", emailAddress_tb.Text.Trim());
+                                    cmd.Parameters.AddWithValue("@Time", DateTime.Now);
+                                    cmd.Parameters.AddWithValue("@IPAddress", ipAdd);
+                                    cmd.Connection = con;
+                                    con.Open();
+                                    cmd.ExecuteNonQuery();
+                                    con.Close();
+
+                                }
+                            }
+                            con.Open();
+                            //check if email exists
+                            SqlCommand check_email = new SqlCommand("SELECT * FROM Account WHERE Email = @Email", con);
+                            check_email.Parameters.AddWithValue("@Email", email);
+                            SqlDataReader reader = check_email.ExecuteReader();
+                            if (reader.HasRows)
+                            {
+                                SHA512Managed hashing = new SHA512Managed();
+                                string dbHash = getDBHash(email);
+                                string dbSalt = getDBSalt(email);
+                                try
+                                {
+                                    if (dbSalt != null && dbSalt.Length > 0 && dbHash != null && dbHash.Length > 0)
+                                    {
+                                        string pwdWithSalt = pwd + dbSalt;
+                                        byte[] hashWithSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwdWithSalt));
+                                        string userHash = Convert.ToBase64String(hashWithSalt);
+                                        if (!userHash.Equals(dbHash))
+                                        {
+                                            errorMsg += "Email or password is not valid. Please try again.";
+                                            validReg = false;
+                                            return;
+                                        }
+                                        Session["UserID"] = email;
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new Exception(ex.ToString());
+                                }
+                                finally { }
+                            }
+                            else
+                            {
+                                error_msg_lbl.Text = "Email or password is not valid. Please try again.";
+                                return;
+                            }
+                            con.Close();
+
+                        }
+                    }
+
+
+                    if (validReg)
+                    {
+                        if (verificationEmail(email))
+                        {
+                            Session["email"] = email;
+                            string guid = Guid.NewGuid().ToString();
+                            Session["AuthTokenVerification"] = guid;
+                            Response.Cookies.Add(new HttpCookie("AuthTokenVerification", guid));
+                            Response.Redirect("Verification.aspx");
+                        }
+                        else
+                        {
+                            error_msg_lbl.Text = "*Email does not exist.";
+                        }
+
+                    }
+                    else
+                    {
+                        error_msg_lbl.Text = errorMsg;
+                    }
                 }
+
+                
             }//if captcha
             else
             {
@@ -177,34 +193,20 @@ namespace SITConnect
         public bool ValidateCaptcha()
         {
             bool result = true;
-
-            //When user submits the recaptcha form, the user gets a response POST parameter. 
-            //captchaResponse consist of the user click pattern. Behaviour analytics! AI :) 
             string captchaResponse = Request.Form["g-recaptcha-response"];
-
-            //To send a GET request to Google along with the response and Secret key.
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create
-           (" https://www.google.com/recaptcha/api/siteverify?secret=6Lcf0W8eAAAAAMXuqqWOKCZIYEPjtKNMa4BxfS2W & response=" + captchaResponse);
-
+           (" https://www.google.com/recaptcha/api/siteverify?secret=6LcXaHAeAAAAAOY_WEnCVIwJ7Xv193GXVszumHZz &response=" + captchaResponse);
 
             try
             {
-
-                //Codes to receive the Response in JSON format from Google Server
                 using (WebResponse wResponse = req.GetResponse())
                 {
                     using (StreamReader readStream = new StreamReader(wResponse.GetResponseStream()))
                     {
-                        //The response in JSON format
                         string jsonResponse = readStream.ReadToEnd();
-
+                        //lbl_gScore.Text = jsonResponse.ToString();
                         JavaScriptSerializer js = new JavaScriptSerializer();
-
-                        //Create jsonObject to handle the response e.g success or Error
-                        //Deserialize Json
                         MyObject jsonObject = js.Deserialize<MyObject>(jsonResponse);
-
-                        //Convert the string "False" to bool false or "True" to bool true
                         result = Convert.ToBoolean(jsonObject.success);//
 
                     }
@@ -282,6 +284,63 @@ namespace SITConnect
             }
             finally { connection.Close(); }
             return s;
+        }
+
+        protected bool lockoutCheck(string email)
+        {
+            SqlConnection connection = new SqlConnection(MYDBConnectionString);
+            string sql = "select Event FROM AuditLog WHERE UserID=@USERID AND Time >= @time";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@USERID", email);
+            command.Parameters.AddWithValue("@time", DateTime.Now.AddMinutes(-1));
+
+            try
+            {
+                connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    int failedattempts = 0;
+
+                    while (reader.Read())
+                    {
+                        if (reader["Event"] != null)
+                        {
+                            if (reader["Event"] != DBNull.Value)
+                            {
+                                string activity = (string)reader["Event"];
+                                if (activity == "Attempted Log In")
+                                {
+                                    failedattempts += 1;
+                                }
+                                else if (activity == "Logged In")
+                                {
+                                    failedattempts = 0;
+                                }
+                            }
+                        }
+                    }
+                    if (failedattempts >= 3)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+
+            finally
+            {
+                connection.Close();
+            }
+            return false;
+           
         }
     }
 }

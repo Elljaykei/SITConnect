@@ -24,103 +24,85 @@ namespace SITConnect
         protected global::System.Web.UI.HtmlControls.HtmlForm form2;
 
         /// <summary>
-        /// fName_tb control.
+        /// fname_lbl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox fName_tb;
+        protected global::System.Web.UI.WebControls.Label fname_lbl;
 
         /// <summary>
-        /// lName_tb control.
+        /// lname_lbl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox lName_tb;
+        protected global::System.Web.UI.WebControls.Label lname_lbl;
 
         /// <summary>
-        /// creditCard_tb control.
+        /// creditCard_lbl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox creditCard_tb;
+        protected global::System.Web.UI.WebControls.Label creditCard_lbl;
 
         /// <summary>
-        /// emailAddress_tb control.
+        /// email_lbl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox emailAddress_tb;
+        protected global::System.Web.UI.WebControls.Label email_lbl;
 
         /// <summary>
-        /// emailChecker_lbl control.
+        /// password_lbl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label emailChecker_lbl;
+        protected global::System.Web.UI.WebControls.Label password_lbl;
 
         /// <summary>
-        /// password_tb control.
+        /// dob_lbl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox password_tb;
+        protected global::System.Web.UI.WebControls.Label dob_lbl;
 
         /// <summary>
-        /// pwdChecker_lbl control.
+        /// photo_lbl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label pwdChecker_lbl;
+        protected global::System.Web.UI.WebControls.Label photo_lbl;
 
         /// <summary>
-        /// dob_tb control.
+        /// chgPassBtn control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox dob_tb;
+        protected global::System.Web.UI.WebControls.Button chgPassBtn;
 
         /// <summary>
-        /// photo_tb control.
+        /// logOutBtn control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox photo_tb;
-
-        /// <summary>
-        /// error_msg_lbl control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label error_msg_lbl;
-
-        /// <summary>
-        /// registerBtn control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button registerBtn;
+        protected global::System.Web.UI.WebControls.Button logOutBtn;
 
         /// <summary>
         /// form1 control.

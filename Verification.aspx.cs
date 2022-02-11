@@ -49,16 +49,12 @@ namespace SITConnect
                                 Session["email"] = null;
                                 Session["registerCode"] = null;
 
-                                Session.Clear();
-                                Session.Abandon();
-                                Session.RemoveAll();
-
                                 Response.Cookies["ASP.NET_SessionId"].Value = string.Empty;
                                 Response.Cookies["ASP.NET_SessionId"].Expires = DateTime.Now.AddMonths(-20);
                                 Response.Cookies["AuthTokenVerification"].Value = string.Empty;
                                 Response.Cookies["AuthTokenVerification"].Expires = DateTime.Now.AddMonths(-20);
 
-                                Response.Redirect("Login.aspx");
+                                Response.Redirect("Login.aspx",false);
                             }
 
                             catch (Exception ex)
@@ -79,7 +75,7 @@ namespace SITConnect
             {
                 if (!(Session["AuthTokenVerification"].ToString() == Request.Cookies["AuthTokenVerification"].Value))
                 {
-                    Response.Redirect("Login.aspx");
+                    Response.Redirect("Login.aspx", false);
                 }
                 else
                 {
@@ -87,12 +83,8 @@ namespace SITConnect
 
                     if (code == verCode_tb.Text.Trim())
                     {
-                        string email = Session["email"].ToString();
+                        string email = (string)Session["UserID"];
                         Session["loggingIn"] = null;
-
-                        Session.Clear();
-                        Session.Abandon();
-                        Session.RemoveAll();
 
                         Response.Cookies["ASP.NET_SessionId"].Value = string.Empty;
                         Response.Cookies["ASP.NET_SessionId"].Expires = DateTime.Now.AddMonths(-20);
@@ -101,44 +93,41 @@ namespace SITConnect
 
                         using (SqlConnection con = new SqlConnection(MYDBConnectionString))
                         {
-                            using (SqlCommand cmd = new SqlCommand("INSERT INTO AuditLog VALUES(@Event, @UserID, @Time,  @IPAddress)"))
+                            using (SqlCommand cmd = new SqlCommand("INSERT INTO AuditLog VALUES(@Event, @UserID, @Time, @IPAddress)"))
                             {
                                 using (SqlDataAdapter sda = new SqlDataAdapter())
                                 {
-                                    var ipAdd = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+                                    try {
+                                        var ipAdd = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
 
-                                    if (string.IsNullOrEmpty(ipAdd))
-                                    {
-                                        ipAdd = Request.ServerVariables["REMOTE_ADDR"];
+                                        if (string.IsNullOrEmpty(ipAdd))
+                                        {
+                                            ipAdd = Request.ServerVariables["REMOTE_ADDR"];
+                                        }
+                                        cmd.CommandType = CommandType.Text;
+                                        cmd.Parameters.AddWithValue("@Event", "Logged In");
+                                        cmd.Parameters.AddWithValue("@UserID", email);
+                                        cmd.Parameters.AddWithValue("@Time", DateTime.Now);
+                                        cmd.Parameters.AddWithValue("@IPAddress", ipAdd);
+                                        cmd.Connection = con;
+                                        con.Open();
+                                        cmd.ExecuteNonQuery();
+                                        con.Close();
                                     }
-                                    cmd.CommandType = CommandType.Text;
-                                    cmd.Parameters.AddWithValue("@Event", "Logged In");
-                                    cmd.Parameters.AddWithValue("@UserID", email);
-                                    cmd.Parameters.AddWithValue("@Time", DateTime.Now);
-                                    cmd.Parameters.AddWithValue("@IPAddress", ipAdd);
-                                    cmd.Connection = con;
-                                    con.Open();
-                                    cmd.ExecuteNonQuery();
-                                    con.Close();
+
+                                    catch (Exception ex)
+                                    {
+                                        throw new Exception(ex.ToString());
+                                    }
+
                                 }
                             }
-
-                            con.Open();
-                            //check if email exists
-                            SqlCommand check_email = new SqlCommand("SELECT * FROM Account WHERE Email = @Email", con);
-                            check_email.Parameters.AddWithValue("@Email", email);
-                            SqlDataReader reader = check_email.ExecuteReader();
-                            if (reader.HasRows)
-                            {
-                                Session["LoggedIn"] = reader;
-                                string guid = Guid.NewGuid().ToString();
-                                Response.Cookies.Add(new HttpCookie("AuthToken", guid));
-                                Response.Redirect("UserDetails.aspx");
-                            }
-                            con.Close();
-
                         }
-              
+                        string guid = Guid.NewGuid().ToString();
+                        Session["AuthToken"] = guid;
+                        Response.Cookies.Add(new HttpCookie("AuthToken", guid));
+                        Response.Redirect("UserDetails.aspx", false);
+
                     }
                     else
                     {
@@ -149,7 +138,7 @@ namespace SITConnect
             }
             else
             {
-                Response.Redirect("Login.aspx");
+                Response.Redirect("Login.aspx", false);
             }
         }
     }
