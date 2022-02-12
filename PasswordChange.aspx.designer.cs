@@ -11,97 +11,88 @@ namespace SITConnect
 {
 
 
-    public partial class UserDetails
+    public partial class PasswordChange
     {
 
         /// <summary>
-        /// form2 control.
+        /// form1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm form2;
+        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
-        /// fname_lbl control.
+        /// password_tb1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label fname_lbl;
+        protected global::System.Web.UI.WebControls.TextBox password_tb1;
 
         /// <summary>
-        /// lname_lbl control.
+        /// pwdChecker_lbl1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lname_lbl;
+        protected global::System.Web.UI.WebControls.Label pwdChecker_lbl1;
 
         /// <summary>
-        /// creditCard_lbl control.
+        /// password_tb2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label creditCard_lbl;
+        protected global::System.Web.UI.WebControls.TextBox password_tb2;
 
         /// <summary>
-        /// email_lbl control.
+        /// pwdChecker_lbl2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label email_lbl;
+        protected global::System.Web.UI.WebControls.Label pwdChecker_lbl2;
 
         /// <summary>
-        /// dob_lbl control.
+        /// password_tb3 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label dob_lbl;
+        protected global::System.Web.UI.WebControls.TextBox password_tb3;
 
         /// <summary>
-        /// photo_lbl control.
+        /// pwdChecker_lbl3 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label photo_lbl;
+        protected global::System.Web.UI.WebControls.Label pwdChecker_lbl3;
 
         /// <summary>
-        /// chgPassBtn control.
+        /// error_msg_lbl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button chgPassBtn;
+        protected global::System.Web.UI.WebControls.Label error_msg_lbl;
 
         /// <summary>
-        /// logOutBtn control.
+        /// SaveBtn control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button logOutBtn;
-
-        /// <summary>
-        /// errorMsg_lbl control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label errorMsg_lbl;
+        protected global::System.Web.UI.WebControls.Button SaveBtn;
     }
 }

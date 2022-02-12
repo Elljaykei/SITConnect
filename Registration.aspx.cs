@@ -174,17 +174,19 @@ namespace SITConnect
         private void saltHashPass()
         {
             string pwd = password_tb.Text.ToString().Trim(); ;
-            //Generate random "salt"
             RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
             byte[] saltByte = new byte[8];
-            //Fills array of bytes with a cryptographically strong sequence of random values.
+
             rng.GetBytes(saltByte);
             salt = Convert.ToBase64String(saltByte);
+
             SHA512Managed hashing = new SHA512Managed();
+
             string pwdWithSalt = pwd + salt;
-            byte[] plainHash = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwd));
             byte[] hashWithSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwdWithSalt));
+
             finalHash = Convert.ToBase64String(hashWithSalt);
+
             RijndaelManaged cipher = new RijndaelManaged();
             cipher.GenerateKey();
             Key = cipher.Key;
@@ -198,14 +200,14 @@ namespace SITConnect
             {
                 using (SqlConnection con = new SqlConnection(MYDBConnectionString))
                 {
-                    using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@firstName, @lastName, @creditCard, @Email, @PasswordHash, @PasswordSalt, @DoB, @Photo, @IV, @Key, @IsVerified)"))
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO Account VALUES(@firstName, @lastName, @creditCard, @Email, @PasswordHash, @PasswordSalt, @DoB, @Photo, @IV, @Key, @IsVerified, @PasswordHistory)"))
                 {
                         using (SqlDataAdapter sda = new SqlDataAdapter())
                         {
                             cmd.CommandType = CommandType.Text;
                             cmd.Parameters.AddWithValue("@firstName", fName_tb.Text.Trim());
                             cmd.Parameters.AddWithValue("@lastName", lName_tb.Text.Trim());
-                            cmd.Parameters.AddWithValue("@creditCard", encryptData(creditCard_tb.Text.Trim()));
+                            cmd.Parameters.AddWithValue("@creditCard", Convert.ToBase64String(encryptData(creditCard_tb.Text.Trim())));
                             cmd.Parameters.AddWithValue("@Email", emailAddress_tb.Text.Trim());
                             cmd.Parameters.AddWithValue("@PasswordHash", finalHash);
                             cmd.Parameters.AddWithValue("@PasswordSalt", salt);
@@ -214,6 +216,7 @@ namespace SITConnect
                             cmd.Parameters.AddWithValue("@IV",Convert.ToBase64String(IV));
                             cmd.Parameters.AddWithValue("@Key", Convert.ToBase64String(Key));
                             cmd.Parameters.AddWithValue("@IsVerified", 0);
+                            cmd.Parameters.AddWithValue("@PasswordHistory", "");
                             cmd.Connection = con;
                             con.Open();
                             cmd.ExecuteNonQuery();
@@ -241,11 +244,13 @@ namespace SITConnect
                 ICryptoTransform encryptTransform = cipher.CreateEncryptor();
                 byte[] plainText = Encoding.UTF8.GetBytes(data);
                 cipherText = encryptTransform.TransformFinalBlock(plainText, 0, plainText.Length);
+
             }
             catch (Exception ex)
             {
                 throw new Exception(ex.ToString());
             }
+
             finally { }
             return cipherText;
         }

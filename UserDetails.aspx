@@ -5,28 +5,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title></title>
-    <style type="text/css">
-
-        .auto-style1 {
-            width: 100%;
-        }
-        .auto-style2 {
-            width: 134px;
-        }
-        .auto-style4 {
-            height: 26px;
-        }
-        .auto-style5 {
-            width: 134px;
-            height: 33px;
-        }
-        .auto-style6 {
-            height: 33px;
-        }
-        .auto-style7 {
-            margin-left: 70px;
-        }
-    </style>
 </head>
 <body>
     <form id="form2" runat="server">
@@ -59,12 +37,6 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="auto-style5">Password</td>
-                    <td class="auto-style6">
-                        <asp:Label ID="password_lbl" runat="server"></asp:Label>
-                    </td>
-                </tr>
-                <tr>
                     <td class="auto-style2">Date of Birth</td>
                     <td>
                         <asp:Label ID="dob_lbl" runat="server"></asp:Label>
@@ -82,14 +54,13 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <asp:Button ID="chgPassBtn" runat="server" Text="Change Password" />
-                        <asp:Button ID="logOutBtn" runat="server" CssClass="auto-style7" OnClick="logOutBtn_Click" Text="Log Out" Width="171px" />
+                        <asp:Button ID="chgPassBtn" runat="server" Text="Change Password" OnClick="chgPassBtn_Click" />
+                        <asp:Button ID="logOutBtn" runat="server" CssClass="auto-style7" OnClick="Logout" Text="Log Out" Width="171px" style="margin-left: 41px" />
                     </td>
                 </tr>
             </table>
         </div>
-    </form>
-    <form id="form1" runat="server">
+        <asp:Label ID="errorMsg_lbl" runat="server" ForeColor="Red"></asp:Label>
     </form>
 </body>
 </html>

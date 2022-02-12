@@ -16,10 +16,11 @@ namespace SITConnect
         string MYDBConnectionstring = System.Configuration.ConfigurationManager.ConnectionStrings["MYDBConnection"].ConnectionString;
         byte[] Key;
         byte[] IV;
-        byte[] nric = null;
+        byte[] creditCard = null;
         string email;
         protected void Page_Load(object sender, EventArgs e)
         {
+            
             if (Session["UserID"] != null && Session["AuthToken"] != null && Request.Cookies["AuthToken"] != null)
             {
                 if (!Session["AuthToken"].ToString().Equals(Request.Cookies["AuthToken"].Value))
@@ -38,7 +39,7 @@ namespace SITConnect
                 Response.Redirect("Login.aspx", false);
             }
 
-        }
+}
 
         protected void readUserInfo(string email)
         {
@@ -68,7 +69,7 @@ namespace SITConnect
                         }
                         if (reader["DoB"] != DBNull.Value)
                         {
-                            dob_lbl.Text = reader["DoB"].ToString();
+                            dob_lbl.Text = ((DateTime)reader["DoB"]).ToString("d");
                         }
                         if (reader["Photo"] != DBNull.Value)
                         {
@@ -76,7 +77,7 @@ namespace SITConnect
                         }
                         if (reader["creditCard"] != DBNull.Value)
                         {
-                            nric = Convert.FromBase64String(reader["creditCard"].ToString());
+                            creditCard = Convert.FromBase64String(reader["creditCard"].ToString());
                         }
                         if (reader["IV"] != DBNull.Value)
                         {
@@ -87,7 +88,7 @@ namespace SITConnect
                             Key = Convert.FromBase64String(reader["Key"].ToString());
                         }
                     }
-                    creditCard_lbl.Text = decryptData(nric);
+                    creditCard_lbl.Text = decryptData(creditCard);
                 }
             }
             catch (Exception ex)
@@ -133,9 +134,9 @@ namespace SITConnect
             return plainText;
         }
 
-        protected void logOutBtn_Click(object sender, EventArgs e)
+        protected void Logout(object sender, EventArgs e)
         {
-            var email = Session["UserID"].ToString();
+            var email = (string)Session["UserID"];
             Session.Clear();
             Session.Abandon();
             Session.RemoveAll();
@@ -152,8 +153,9 @@ namespace SITConnect
                         {
                             ipAdd = Request.ServerVariables["REMOTE_ADDR"];
                         }
+
                         cmd.CommandType = CommandType.Text;
-                        cmd.Parameters.AddWithValue("@Event", "Logged Out");
+                        cmd.Parameters.AddWithValue("@Event", "Attempted Log In");
                         cmd.Parameters.AddWithValue("@UserID", email);
                         cmd.Parameters.AddWithValue("@Time", DateTime.Now);
                         cmd.Parameters.AddWithValue("@IPAddress", ipAdd);
@@ -161,6 +163,7 @@ namespace SITConnect
                         con.Open();
                         cmd.ExecuteNonQuery();
                         con.Close();
+
                     }
                 }
             }
@@ -178,6 +181,120 @@ namespace SITConnect
             }
 
             Response.Redirect("Login.aspx", false);
+        }
+
+        protected bool lockoutCheck(string email)
+        {
+            SqlConnection connection = new SqlConnection(MYDBConnectionstring);
+            string sql = "select Event FROM AuditLog WHERE UserID=@USERID AND Time >= @time";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@USERID", email);
+            command.Parameters.AddWithValue("@time", DateTime.Now.AddMinutes(-1));
+
+            try
+            {
+                connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    int failedattempts = 0;
+
+                    while (reader.Read())
+                    {
+                        if (reader["Event"] != null)
+                        {
+                            if (reader["Event"] != DBNull.Value)
+                            {
+                                string activity = (string)reader["Event"];
+                                if (activity == "Attempted Log In")
+                                {
+                                    failedattempts += 1;
+                                }
+                                else if (activity == "Logged In")
+                                {
+                                    failedattempts = 0;
+                                }
+                            }
+                        }
+                    }
+                    if (failedattempts >= 3)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+
+            finally
+            {
+                connection.Close();
+            }
+            return false;
+
+        }
+
+        protected void chgPassBtn_Click(object sender, EventArgs e)
+        {
+            string email = (string)Session["UserID"];
+            if (chgPwdCheck(email))
+            {
+                Response.Redirect("PasswordChange.aspx");
+            }
+            else
+            {
+                errorMsg_lbl.Text = "Password can only be changed once every minute";
+            }
+        }
+
+        protected bool chgPwdCheck(string email)
+        {
+            SqlConnection connection = new SqlConnection(MYDBConnectionstring);
+            string sql = "select Event FROM AuditLog WHERE UserID=@USERID AND Time >= @time";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@USERID", email);
+            command.Parameters.AddWithValue("@time", DateTime.Now.AddMinutes(-1));
+
+            try
+            {
+                connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    int failedattempts = 0;
+
+                    while (reader.Read())
+                    {
+                        if (reader["Event"] != null)
+                        {
+                            if (reader["Event"] != DBNull.Value)
+                            {
+                                string activity = (string)reader["Event"];
+                                if (activity == "Password Changed")
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+
+            finally
+            {
+                connection.Close();
+            }
         }
     }
 }

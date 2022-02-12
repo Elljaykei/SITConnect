@@ -105,7 +105,6 @@ namespace SITConnect
                                         {
                                             errorMsg += "Email or password is not valid. Please try again.";
                                             validReg = false;
-                                            return;
                                         }
                                         Session["UserID"] = email;
                                     }
@@ -119,7 +118,6 @@ namespace SITConnect
                             else
                             {
                                 error_msg_lbl.Text = "Email or password is not valid. Please try again.";
-                                return;
                             }
                             con.Close();
 
