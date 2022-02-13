@@ -1,16 +1,12 @@
-**SIT Connect - Application Security ICA**
+#SITConnect - Application Security Assignment
 
-This repository contains the source code for submission as stated in the title.
+This README is the report for submission.
 
-**Legal Disclaimer**
+This Repository contains the source code required for submission.
 
-It is  **strictly prohibited**  to duplicate, use part or in whole, any piece of code in this repository without proper attribution as per AGPL-3.0 license. A copy may be found in LICENSE at the root of this repository. Additionally, resubmission of this repository as academic work or claiming my work as your own is prohibited and unethical and I will exercise my full legal right against people who violate this.
+---
 
-Copyright (c) 2021, Dylan Kok.
-
-All Rights Reserved.
-
-**Registration form**
+###Registration form
 
 **Set Strong password**
 
