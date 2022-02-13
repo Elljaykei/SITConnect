@@ -1,4 +1,4 @@
-#SITConnect - Application Security Assignment
+#SITConnect - Application Security Assignment#
 
 This README is the report for submission.
 
@@ -6,7 +6,7 @@ This Repository contains the source code required for submission.
 
 ---
 
-###Registration form
+###Registration form###
 
 **Set Strong password**
 
