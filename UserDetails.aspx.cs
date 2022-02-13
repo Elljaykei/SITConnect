@@ -57,23 +57,23 @@ namespace SITConnect
                     {
                         if (reader["firstName"] != DBNull.Value)
                         {
-                            fname_lbl.Text = reader["firstName"].ToString();
+                            fname_lbl.Text = HttpUtility.HtmlEncode(reader["firstName"].ToString());
                         }
                         if (reader["lastName"] != DBNull.Value)
                         {
-                            lname_lbl.Text = reader["lastName"].ToString();
+                            lname_lbl.Text = HttpUtility.HtmlEncode(reader["lastName"].ToString());
                         }
                         if (reader["Email"] != DBNull.Value)
                         {
-                            email_lbl.Text = reader["Email"].ToString();
+                            email_lbl.Text = HttpUtility.HtmlEncode(reader["Email"].ToString());
                         }
                         if (reader["DoB"] != DBNull.Value)
                         {
-                            dob_lbl.Text = ((DateTime)reader["DoB"]).ToString("d");
+                            dob_lbl.Text = HttpUtility.HtmlEncode(((DateTime)reader["DoB"]).ToString("d"));
                         }
                         if (reader["Photo"] != DBNull.Value)
                         {
-                            photo_lbl.Text = reader["Photo"].ToString();
+                            photo_lbl.Text = HttpUtility.HtmlEncode(reader["Photo"].ToString());
                         }
                         if (reader["creditCard"] != DBNull.Value)
                         {
@@ -88,7 +88,7 @@ namespace SITConnect
                             Key = Convert.FromBase64String(reader["Key"].ToString());
                         }
                     }
-                    creditCard_lbl.Text = decryptData(creditCard);
+                    creditCard_lbl.Text = HttpUtility.HtmlEncode(decryptData(creditCard));
                 }
             }
             catch (Exception ex)
