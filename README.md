@@ -1,19 +1,25 @@
 # SITConnect - Application Security Assignment
+---
 
 This README is the report for submission.
 
 This Repository contains the source code required for submission.
 
----
+Done by: Lim Jing Kai, IT2005 NYP
+
 
 ### Registration form
+---
 
 **Set Strong password**
 
-- Password complexity checks present.
-  - Server-side checks will reject if requirements are not met.
-  - Client-side does not allow form submission unless form is fully filled.
-- Client-side provides hints on how to improve password.
+- Perform password complexity checks.
+  - Server-based checks will reject registration if requirements are not met.
+  - Client-based checks have all fields set as required, unless all filled, cannot be submitted.
+  - Requirements: (Min 12 chars,
+Use combination of lower-case, upper-case, Numbers
+and special characters)
+- Client-based tells user what is lacking and how to make the password stronger.
 
 **Securing user data and passwords**
 
