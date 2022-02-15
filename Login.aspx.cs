@@ -118,6 +118,7 @@ namespace SITConnect
                             else
                             {
                                 error_msg_lbl.Text = "Email or password is not valid. Please try again.";
+                                validReg = false;
                             }
                             con.Close();
 
