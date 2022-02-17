@@ -8,83 +8,84 @@ This Repository contains the source code required for submission.
 Done by: Lim Jing Kai, IT2005 NYP
 
 
-### Registration form
+### Registration Page
 ---
 
 **Set Strong password**
 
 - Perform password complexity checks.
-  - Server-based checks will reject registration if requirements are not met.
+  - Server-based checks will reject registration if **requirements** are not met.
   - Client-based checks have all fields set as required, unless all filled, cannot be submitted.
-  - Requirements: (Min 12 chars,
+  - **Requirements**: (Min 12 chars,
 Use combination of lower-case, upper-case, Numbers
 and special characters)
 - Client-based tells user what is lacking and how to make the password stronger.
 
 **Securing user data and passwords**
 
-- Password is hashed using Bcrypt algorithm
-  - Superior as compared to SHA512 since SHA512 can hash faster than Bcrypt, allowing for faster brute forces
-  - Bcrypt has in-built salting. There is no need to salt the password before hashing.
-  - Implemented salting rounds is 12. Which is 2 rounds more than the industry standard.
-- Card number is encrypted using AES256
-  - Initialisation Vector and Key is stored on the server in /CryptoStore/ folder. This means that the deployment server also has to be compromised for to obtain IV and keys.
-  - Each key is a 512 characters, randomly generated string, hashed using SHA256 before being used in the encryption process.
+- Password is hashed using SHA512
+  - Password has a salt prepended and hashed
+  - Salt is randomly generated and stored alongside the PasswordHash
+- Card number is encrypted using AES (Rijndael)
+  - Card is encrypted using randomly generated IV and Key
+  - IV, key and Card number is stored after being converted to Base64String
 
 **Session**
 
-- Sessions are not generated until login has occurred. (Standard ASP.Net Core behaviour)
-- Session times-out after 3 minutes of idling
-- User is redirected to /MyAccount page after successful login.
-- /Login and /Register pages are not accessible if the user is logged in.
+- Session is created for Login and Registration (For Verification)
+- AuthTokenVerification created with session and cookie for verification page.
+- Normal AuthToken created after login.
+- Session time-out is set to 1 minutes of idle.
+- User is redirected to /UserDetails page after login.
+- User is redirected to /Login if user is not logged in and tried to access other pages through url.
 
+### Login Page
+---
 **Login/Logout**
 
-- User can login after registration
-- Account will be locked ourt after 3 login failures.
-  - Each wrong password attempt is treated as individual attempts
-    - If the first attempt is done after 15 mins since the last 3rd attempt, the account is assumed to have 2 wrong attempts on record.
-    - This means that the user will have to wait for all attempts to be out of the 15 minutes window to consider the account as &#39;allowed for login&#39;.
-  - Session cookie and all user data for said session is cleared upon logging out.
-  - Each user can perform an audit own their own account. Page is located at /AuditDisplay.
+- User can only login after registration and verification
+- Account will be locked out after 3 login failures.
+  - An attempt is regarded as an instance in which the user uses the same email and wrong password.
+  - The code checks the auditlog for entries in the past 3 minutes.
+  - If there are >=3 entries of "Failed Attempted Login" account remains locked out until there are <3 entries in the past 3 minutes.
+- Audit log will be updated at login, password change and log out.
 
 **Anti-bot**
 
-- reCaptcha enabled on /Login and /Register
+- Google reCaptcha v3 enabled on /Login
 
+### General
+---
 **Proper Input Validation**
 
-- No direct raw SQL queries were used. All queries are done via safe methods (etc. Linq).
+- No direct SQL queries were used. Preventing SQLi.
+- AuthTokenVerification creation. Preventing XSS.
+- Verification via email is present
 - Client and server input validation present
-  - Credit card number is validated against checksum.
-  - Test card numbers are blocked
+  - Password must adhere to a certain set of requirements if not it will be rejected.
+  - Email must  be a legitimate email.
 
 **Proper Error handling**
 
-- Verbose error messages disabled.
-- 403 is handled by /403.
-- 404 is handled via status code 404. Left to browser to interpret and show error page.
+- Errors 403, 404 and 500 are specifically Handled.
+- Other errors are handled by GenericError
 - **Test cases**
-  - /MyAccount (When not authenticated) - 403
-  - /thisPageDoesNotExist69 - 404
-  - /Logout (When not authenticated) - 301
+  - /UserDetails.aspx (When not authenticated) - 403
+  - /1.aspx - 404
 
 **Software Testing - Source code analysis**
 
-- CodeQL by Github present.
+- CodeQL by Github present (0 Security Warnings left).
 
 **Advanced Features**
 
-- Account will be unlocked if in the last 15 mins, there are no more than 3 password attempts.
-- Password reuse disallowed.
+- Account will be unlocked if in the last minute there are less than 3 failed login attempts..
 - Password may be changed.
+- Password cannot be same as last two passwords.
 - Password age:
-  - Cannot be changed after 5 mins since the last change.
-  - Must be changed after 20 since the last password change.
-    - Forced on the next login
+  - Cannot be changed for 1 minute since the last change.
+  - Must be changed after 3 mins since the last password change.
+    - User redirected to /PasswordChange upon login.
 - 2FA present.
-  - 6 digit code is sent to the user&#39;s email address.
+  - Randomised verification code is sent to the user's entered email address.
   - Each code expires after 5 mins.
-  - User will need to relog in to get a new code.
-    - Prevents resend email abuse.
-  - All codes associated to a user account is deleted upon successful 2FA authentication and before each new OTP is sent.
